@@ -1,5 +1,4 @@
-import { FunctionType } from "./types"
-
+import { FunctionType } from './types';
 
 interface AST {
   equals(node: AST): boolean;
@@ -9,64 +8,75 @@ interface AST {
 class Main implements AST {
   constructor(public statements: Array<AST>) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitMain(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitMain(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Main &&
+    return (
+      other instanceof Main &&
       this.statements.length === other.statements.length &&
       this.statements.every((statement, i) =>
-	statement.equals(other.statements[i]));
+        statement.equals(other.statements[i])
+      )
+    );
   }
 }
 
 class Assert implements AST {
   constructor(public condition: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitAssert(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitAssert(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Assert && 
-      this.condition.equals(other.condition);
+    return other instanceof Assert && this.condition.equals(other.condition);
   }
 }
 
 class Length implements AST {
   constructor(public array: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitLength(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitLength(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Length && 
-      this.array.equals(other.array);
+    return other instanceof Length && this.array.equals(other.array);
   }
 }
 
 class Integer implements AST {
   constructor(public value: number) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitInteger(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitInteger(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Integer &&
-      this.value === other.value;
+    return other instanceof Integer && this.value === other.value;
   }
 }
 
 class Bool implements AST {
   constructor(public value: boolean) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitBool(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitBool(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Bool &&
-      this.value === other.value;
+    return other instanceof Bool && this.value === other.value;
   }
 }
 
 class Undefined implements AST {
   constructor() {}
 
-  visit<T>(v: Visitor<T>) { return v.visitUndefined(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitUndefined(this);
+  }
 
   equals(other: AST): boolean {
     return other instanceof Undefined;
@@ -76,7 +86,9 @@ class Undefined implements AST {
 class Not implements AST {
   constructor(public term: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitNot(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitNot(this);
+  }
 
   equals(other: AST): boolean {
     return other instanceof Not && this.term.equals(other.term);
@@ -86,221 +98,289 @@ class Not implements AST {
 class Equal implements AST {
   constructor(public left: AST, public right: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitEqual(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitEqual(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Equal &&
+    return (
+      other instanceof Equal &&
       this.left.equals(other.left) &&
-      this.right.equals(other.right);
+      this.right.equals(other.right)
+    );
   }
 }
 
 class NotEqual implements AST {
   constructor(public left: AST, public right: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitNotEqual(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitNotEqual(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof NotEqual &&
+    return (
+      other instanceof NotEqual &&
       this.left.equals(other.left) &&
-      this.right.equals(other.right);
+      this.right.equals(other.right)
+    );
   }
 }
 
 class Add implements AST {
   constructor(public left: AST, public right: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitAdd(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitAdd(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Add &&
+    return (
+      other instanceof Add &&
       this.left.equals(other.left) &&
-      this.right.equals(other.right);
+      this.right.equals(other.right)
+    );
   }
 }
 
 class Subtract implements AST {
   constructor(public left: AST, public right: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitSubtract(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitSubtract(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Subtract &&
+    return (
+      other instanceof Subtract &&
       this.left.equals(other.left) &&
-      this.right.equals(other.right);
+      this.right.equals(other.right)
+    );
   }
 }
 
 class Multiply implements AST {
   constructor(public left: AST, public right: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitMultiply(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitMultiply(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Multiply &&
+    return (
+      other instanceof Multiply &&
       this.left.equals(other.left) &&
-      this.right.equals(other.right);
+      this.right.equals(other.right)
+    );
   }
 }
 
 class Divide implements AST {
   constructor(public left: AST, public right: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitDivide(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitDivide(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Divide &&
+    return (
+      other instanceof Divide &&
       this.left.equals(other.left) &&
-      this.right.equals(other.right);
+      this.right.equals(other.right)
+    );
   }
 }
 
 class Call implements AST {
   constructor(public callee: string, public args: Array<AST>) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitCall(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitCall(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Call &&
+    return (
+      other instanceof Call &&
       this.callee === other.callee &&
       this.args.length === other.args.length &&
-      this.args.every((arg, i) => arg.equals(other.args[i]));
+      this.args.every((arg, i) => arg.equals(other.args[i]))
+    );
   }
 }
 
 class ArrayNode implements AST {
   constructor(public args: Array<AST>) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitArrayNode(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitArrayNode(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof ArrayNode &&
+    return (
+      other instanceof ArrayNode &&
       this.args.length === other.args.length &&
-      this.args.every((arg, i) => arg.equals(other.args[i]));
+      this.args.every((arg, i) => arg.equals(other.args[i]))
+    );
   }
 }
 
 class ArrayLookup implements AST {
   constructor(public array: AST, public index: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitArrayLookup(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitArrayLookup(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof ArrayLookup && 
+    return (
+      other instanceof ArrayLookup &&
       this.array.equals(other.array) &&
-      this.index.equals(other.index);
+      this.index.equals(other.index)
+    );
   }
 }
 
 class Exit implements AST {
   constructor(public term: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitExit(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitExit(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Exit && 
-      this.term.equals(other.term);
+    return other instanceof Exit && this.term.equals(other.term);
   }
 }
 
 class Block implements AST {
   constructor(public statements: Array<AST>) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitBlock(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitBlock(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Block &&
+    return (
+      other instanceof Block &&
       this.statements.length === other.statements.length &&
       this.statements.every((statement, i) =>
-	statement.equals(other.statements[i]));
+        statement.equals(other.statements[i])
+      )
+    );
   }
 }
 
 class If implements AST {
-  constructor(public conditional: AST,
-              public consequence: AST,
-	      public alternative: AST) {}
+  constructor(
+    public conditional: AST,
+    public consequence: AST,
+    public alternative: AST
+  ) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitIf(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitIf(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof If &&
+    return (
+      other instanceof If &&
       this.conditional.equals(other.conditional) &&
       this.consequence.equals(other.consequence) &&
-      this.alternative.equals(other.alternative);
+      this.alternative.equals(other.alternative)
+    );
   }
 }
 
 class FunctionDefinition implements AST {
-  constructor(public name: string,
-              public signature: FunctionType,
-              public body: AST) {}
+  constructor(
+    public name: string,
+    public signature: FunctionType,
+    public body: AST
+  ) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitFunctionDefinition(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitFunctionDefinition(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof FunctionDefinition &&
+    return (
+      other instanceof FunctionDefinition &&
       this.name === other.name &&
       this.signature.equals(other.signature) &&
-      this.body.equals(other.body);
+      this.body.equals(other.body)
+    );
   }
 }
 
 class Id implements AST {
   constructor(public value: string) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitId(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitId(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Id && 
-      this.value === other.value;
+    return other instanceof Id && this.value === other.value;
   }
 }
 
 class Return implements AST {
   constructor(public term: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitReturn(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitReturn(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Return && 
-      this.term.equals(other.term);
+    return other instanceof Return && this.term.equals(other.term);
   }
 }
 
 class While implements AST {
   constructor(public conditional: AST, public body: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitWhile(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitWhile(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof While &&
+    return (
+      other instanceof While &&
       this.conditional.equals(other.conditional) &&
-      this.body.equals(other.body);
+      this.body.equals(other.body)
+    );
   }
 }
 
 class Assign implements AST {
   constructor(public name: string, public value: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitAssign(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitAssign(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Assign &&
+    return (
+      other instanceof Assign &&
       this.name === other.name &&
-      this.value.equals(other.value);
+      this.value.equals(other.value)
+    );
   }
 }
 
 class Var implements AST {
   constructor(public name: string, public value: AST) {}
 
-  visit<T>(v: Visitor<T>) { return v.visitVar(this); }
+  visit<T>(v: Visitor<T>) {
+    return v.visitVar(this);
+  }
 
   equals(other: AST): boolean {
-    return other instanceof Var &&
+    return (
+      other instanceof Var &&
       this.name === other.name &&
-      this.value.equals(other.value);
+      this.value.equals(other.value)
+    );
   }
 }
 
@@ -360,4 +440,4 @@ export {
   Assign,
   Var,
   Visitor,
-}
+};

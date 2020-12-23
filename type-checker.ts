@@ -1,13 +1,41 @@
-import { 
-  Type, BoolType, IntegerType, VoidType, ArrayType, FunctionType,
-} from "./types";
+import {
+  Type,
+  BoolType,
+  IntegerType,
+  VoidType,
+  ArrayType,
+  FunctionType,
+} from './types';
 
 import {
-  AST, Main, Assert, Length, Integer, Bool, Undefined, Not, Equal, NotEqual,
-  Add, Subtract, Multiply, Divide, Call, ArrayNode, ArrayLookup, Exit, Block, If,
-  FunctionDefinition, Id, Return, While, Assign, Var, Visitor,
-} from "./ast";
-
+  AST,
+  Main,
+  Assert,
+  Length,
+  Integer,
+  Bool,
+  Undefined,
+  Not,
+  Equal,
+  NotEqual,
+  Add,
+  Subtract,
+  Multiply,
+  Divide,
+  Call,
+  ArrayNode,
+  ArrayLookup,
+  Exit,
+  Block,
+  If,
+  FunctionDefinition,
+  Id,
+  Return,
+  While,
+  Assign,
+  Var,
+  Visitor,
+} from './ast';
 
 function assertType(expected: Type, got: Type): void {
   if (!expected.equals(got)) {
@@ -16,9 +44,11 @@ function assertType(expected: Type, got: Type): void {
 }
 
 class TypeChecker implements Visitor<Type> {
-  constructor(public locals: Map<string, Type> = new Map(),
-              public functions: Map<string, FunctionType> = new Map(),
-              public currentFunctionReturnType: Type | null = null) {}
+  constructor(
+    public locals: Map<string, Type> = new Map(),
+    public functions: Map<string, FunctionType> = new Map(),
+    public currentFunctionReturnType: Type | null = null
+  ) {}
 
   visitMain(node: Main) {
     node.statements.forEach((statement) => statement.visit(this));
@@ -93,7 +123,7 @@ class TypeChecker implements Visitor<Type> {
   visitCall(node: Call) {
     let expected = this.functions.get(node.callee);
     if (!expected) {
-      throw Error(`Type error: function ${node.callee} is not defined`); 
+      throw Error(`Type error: function ${node.callee} is not defined`);
     }
     let argsTypes = new Map();
     node.args.forEach((arg, i) => argsTypes.set(`x${i}`, arg.visit(this)));
@@ -144,13 +174,13 @@ class TypeChecker implements Visitor<Type> {
 
   visitFunctionDefinition(node: FunctionDefinition) {
     if (this.currentFunctionReturnType) {
-      throw Error("Nexted functions are not supported");
+      throw Error('Nexted functions are not supported');
     }
     this.functions.set(node.name, node.signature);
-    let visitor = new TypeChecker( 
+    let visitor = new TypeChecker(
       new Map(node.signature.parameters),
       this.functions,
-      node.signature.returnType,
+      node.signature.returnType
     );
     node.body.visit(visitor);
     return new VoidType();
@@ -170,7 +200,7 @@ class TypeChecker implements Visitor<Type> {
       assertType(this.currentFunctionReturnType, type);
       return new VoidType();
     } else {
-      throw Error("Encountered return statement outside any function");
+      throw Error('Encountered return statement outside any function');
     }
   }
 
@@ -183,7 +213,9 @@ class TypeChecker implements Visitor<Type> {
   visitAssign(node: Assign) {
     let variableType = this.locals.get(node.name);
     if (!variableType) {
-      throw Error(`Type error: assignment to an undefined variable ${node.name}`);
+      throw Error(
+        `Type error: assignment to an undefined variable ${node.name}`
+      );
     }
     let valueType = node.value.visit(this);
     assertType(variableType, valueType);
@@ -197,4 +229,4 @@ class TypeChecker implements Visitor<Type> {
   }
 }
 
-export { TypeChecker }
+export { TypeChecker };

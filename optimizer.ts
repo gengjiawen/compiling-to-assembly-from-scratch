@@ -1,11 +1,33 @@
 import {
-  AST, Main, Assert, Integer, Bool, Undefined, Not, Equal, NotEqual, Add,
-  Subtract, Multiply, Divide, Call, ArrayNode, ArrayLookup, Exit, Block, If,
-  FunctionDefinition, Id, Return, While, Assign, Var, Visitor,
-} from "./ast";
+  AST,
+  Main,
+  Assert,
+  Integer,
+  Bool,
+  Undefined,
+  Not,
+  Equal,
+  NotEqual,
+  Add,
+  Subtract,
+  Multiply,
+  Divide,
+  Call,
+  ArrayNode,
+  ArrayLookup,
+  Exit,
+  Block,
+  If,
+  FunctionDefinition,
+  Id,
+  Return,
+  While,
+  Assign,
+  Var,
+  Visitor,
+} from './ast';
 
-import { ASTTraversal } from "./ast-traversal";
-
+import { ASTTraversal } from './ast-traversal';
 
 class Optimizer extends ASTTraversal {
   constructor(public constants: Map<string, AST>) {
@@ -39,7 +61,7 @@ class Optimizer extends ASTTraversal {
   }
 
   visitFunctionDefinition(node: FunctionDefinition): AST {
-    let visitor = new Optimizer(new Map()); 
+    let visitor = new Optimizer(new Map());
     let body = node.body.visit(visitor);
     return new FunctionDefinition(node.name, node.signature, body);
   }
@@ -65,4 +87,4 @@ class Optimizer extends ASTTraversal {
   }
 }
 
-export { Optimizer }
+export { Optimizer };

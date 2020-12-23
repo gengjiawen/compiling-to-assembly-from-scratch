@@ -1,47 +1,80 @@
-import { 
-  Type, BoolType, IntegerType, VoidType, ArrayType, FunctionType,
-} from "./types";
+import {
+  Type,
+  BoolType,
+  IntegerType,
+  VoidType,
+  ArrayType,
+  FunctionType,
+} from './types';
 
 import {
-  AST, Main, Assert, Integer, Bool, Not, Equal, NotEqual, Add, Subtract,
-  Multiply, Divide, Call, ArrayNode, ArrayLookup, Exit, Block, If,
-  FunctionDefinition, Id, Return, While, Assign, Var, Visitor,
-} from "./ast";
+  AST,
+  Main,
+  Assert,
+  Integer,
+  Bool,
+  Not,
+  Equal,
+  NotEqual,
+  Add,
+  Subtract,
+  Multiply,
+  Divide,
+  Call,
+  ArrayNode,
+  ArrayLookup,
+  Exit,
+  Block,
+  If,
+  FunctionDefinition,
+  Id,
+  Return,
+  While,
+  Assign,
+  Var,
+  Visitor,
+} from './ast';
 
-import { TypeChecker } from "./type-checker"
-import { CodeGenerator, CodeGeneratorDynamicTyping } from "./code-generator"
-import { ASTTraversal } from "./ast-traversal"
-import { Optimizer } from "./optimizer"
-import { ParseResult, Source, Parser } from "./parser-combinators"
-import { statement, expression, parser } from "./parser"
+import { TypeChecker } from './type-checker';
+import { CodeGenerator, CodeGeneratorDynamicTyping } from './code-generator';
+import { ASTTraversal } from './ast-traversal';
+import { Optimizer } from './optimizer';
+import { ParseResult, Source, Parser } from './parser-combinators';
+import { statement, expression, parser } from './parser';
 
 let test = (name: string, callback: () => void) => callback();
 
-test("Source matching is idempotent", () => {
+test('Source matching is idempotent', () => {
   let s = new Source('  let', 2);
   let result1 = s.match(/let/y);
-  console.assert(result1 !== null && result1.value === 'let' && result1.source.index === 5);
+  console.assert(
+    result1 !== null && result1.value === 'let' && result1.source.index === 5
+  );
   let result2 = s.match(/let/y);
-  console.assert(result2 !== null && result2.value === 'let' && result2.source.index === 5);
+  console.assert(
+    result2 !== null && result2.value === 'let' && result2.source.index === 5
+  );
 });
 
-let {regexp, constant, maybe, zeroOrMore, error} = Parser;
+let { regexp, constant, maybe, zeroOrMore, error } = Parser;
 
-test("Parsing alternatives with `or`", () => {
+test('Parsing alternatives with `or`', () => {
   let parser = regexp(/bye/y).or(regexp(/hai/y));
   let result = parser.parseStringToCompletion('hai');
   console.assert(result == 'hai');
 });
 
-test("Parsing with bindings", () => {
+test('Parsing with bindings', () => {
   let parser = regexp(/[a-z]+/y).bind((word) =>
     regexp(/[0-9]+/y).bind((digits) =>
-      constant(`first ${word}, then ${digits}`)));
+      constant(`first ${word}, then ${digits}`)
+    )
+  );
   let result = parser.parseStringToCompletion('hai123');
   console.assert(result == 'first hai, then 123');
 });
 
-test("Expression parser", () => {
+test('Expression parser', () => {
   console.log();
   let [x, y, z] = [new Id('x'), new Id('y'), new Id('z')];
   let parse = (s: string) => expression.parseStringToCompletion(s);
@@ -58,7 +91,7 @@ test("Expression parser", () => {
   console.assert(parse('f(x, y, z)').equals(new Call('f', [x, y, z])));
 });
 
-test("Statement parser", () => {
+test('Statement parser', () => {
   console.log();
   let [x, y, z] = [new Id('x'), new Id('y'), new Id('z')];
   let parse = (s: string) => statement.parseStringToCompletion(s);
@@ -67,20 +100,26 @@ test("Statement parser", () => {
   console.assert(parse('returnx;').equals(new Id('returnx')));
   console.assert(parse('x + y;').equals(new Add(x, y)));
 
-  console.assert(parse('if (x) return y; else return z;').equals(
-    new If(x, new Return(y), new Return(z))));
+  console.assert(
+    parse('if (x) return y; else return z;').equals(
+      new If(x, new Return(y), new Return(z))
+    )
+  );
 
   console.assert(parse('{}').equals(new Block([])));
   console.assert(parse('{ x; y; }').equals(new Block([x, y])));
 
-  console.assert(parse('if (x) { return y; } else { return z; }').equals(
-    new If(x, new Block([new Return(y)]), new Block([new Return(z)]))));
+  console.assert(
+    parse('if (x) { return y; } else { return z; }').equals(
+      new If(x, new Block([new Return(y)]), new Block([new Return(z)]))
+    )
+  );
 
   //console.assert(parse('function id(x) { return x; }').equals(
   //  new FunctionDefinition('id', ['x'], new Block([new Return(x)]))));
 });
 
-test("Parser integration test", () => {
+test('Parser integration test', () => {
   let source = `
     function factorial(n: number): number {
       var result = 1;
@@ -94,16 +133,19 @@ test("Parser integration test", () => {
 
   let expected = new Block([
     new FunctionDefinition(
-      "factorial", 
-      new FunctionType(new Map([["n", new IntegerType()]]), new IntegerType()),
+      'factorial',
+      new FunctionType(new Map([['n', new IntegerType()]]), new IntegerType()),
       new Block([
-        new Var("result", new Integer(1)),
-        new While(new NotEqual(new Id("n"), new Integer(1)), new Block([
-          new Assign("result", new Multiply(new Id("result"), new Id("n"))),
-          new Assign("n", new Subtract(new Id("n"), new Integer(1))),
-        ])),
-        new Return(new Id("result")),
-      ]),
+        new Var('result', new Integer(1)),
+        new While(
+          new NotEqual(new Id('n'), new Integer(1)),
+          new Block([
+            new Assign('result', new Multiply(new Id('result'), new Id('n'))),
+            new Assign('n', new Subtract(new Id('n'), new Integer(1))),
+          ])
+        ),
+        new Return(new Id('result')),
+      ])
     ),
   ]);
 
@@ -114,7 +156,7 @@ test("Parser integration test", () => {
 
 let parse = (s: string) => parser.parseStringToCompletion(s);
 
-test("Optimizer: constant folding and constant propagation", () => {
+test('Optimizer: constant folding and constant propagation', () => {
   let before = parse(`
     function f(x) {
       var y = 1 + 2;
@@ -148,7 +190,7 @@ test("Optimizer: constant folding and constant propagation", () => {
   console.assert(result.equals(after));
 });
 
-test("End-to-end test", () => {
+test('End-to-end test', () => {
   let source = `
     function assert(x: boolean): void {
       if (x) {

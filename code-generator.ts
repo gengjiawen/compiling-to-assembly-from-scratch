@@ -1,11 +1,34 @@
 import {
-  AST, Main, Assert, Length, Integer, Bool, Undefined, Not, Equal, NotEqual,
-  Add, Subtract, Multiply, Divide, Call, ArrayNode, ArrayLookup, Exit, Block, If,
-  FunctionDefinition, Id, Return, While, Assign, Var, Visitor,
-} from "./ast";
+  AST,
+  Main,
+  Assert,
+  Length,
+  Integer,
+  Bool,
+  Undefined,
+  Not,
+  Equal,
+  NotEqual,
+  Add,
+  Subtract,
+  Multiply,
+  Divide,
+  Call,
+  ArrayNode,
+  ArrayLookup,
+  Exit,
+  Block,
+  If,
+  FunctionDefinition,
+  Id,
+  Return,
+  While,
+  Assign,
+  Var,
+  Visitor,
+} from './ast';
 
-
-let emit = console.log
+let emit = console.log;
 
 class Label {
   static counter = 0;
@@ -21,17 +44,17 @@ class Label {
 }
 
 class CodeGenerator implements Visitor<void> {
-  constructor(public locals: Map<string, number> = new Map(),
-              public nextLocalOffset: number = 0) {}
+  constructor(
+    public locals: Map<string, number> = new Map(),
+    public nextLocalOffset: number = 0
+  ) {}
 
   visitMain(node: Main) {
     emit(`.global main`);
     emit(`main:`);
     emit(`  push {fp, lr}`);
     emit(`  mov fp, sp`);
-    node.statements.forEach((statement) =>
-      statement.visit(this)
-    );
+    node.statements.forEach((statement) => statement.visit(this));
     emit(`  mov sp, fp`);
     emit(`  mov r0, #0`);
     emit(`  pop {fp, pc}`);
@@ -55,11 +78,11 @@ class CodeGenerator implements Visitor<void> {
   }
 
   visitBool(node: Bool) {
-    new Integer(Number(node.value)).visit(this)
+    new Integer(Number(node.value)).visit(this);
   }
 
   visitUndefined(node: Undefined) {
-    new Integer(0).visit(this)
+    new Integer(0).visit(this);
   }
 
   visitNot(node: Not) {
@@ -137,7 +160,7 @@ class CodeGenerator implements Visitor<void> {
       emit(`  pop {r0, r1, r2, r3}`);
       emit(`  bl ${node.callee}`);
     } else {
-      throw Error("More than 4 arguments are not supported");
+      throw Error('More than 4 arguments are not supported');
     }
   }
 
@@ -178,9 +201,7 @@ class CodeGenerator implements Visitor<void> {
   }
 
   visitBlock(node: Block) {
-    node.statements.forEach((statement) =>
-      statement.visit(this)
-    );
+    node.statements.forEach((statement) => statement.visit(this));
   }
 
   visitIf(node: If) {
@@ -197,8 +218,8 @@ class CodeGenerator implements Visitor<void> {
   }
 
   visitFunctionDefinition(node: FunctionDefinition) {
-    if (node.signature.parameters.size > 4) 
-      throw Error("More than 4 params is not supported");
+    if (node.signature.parameters.size > 4)
+      throw Error('More than 4 params is not supported');
 
     emit(``);
     emit(`.global ${node.name}`);
@@ -280,17 +301,18 @@ let falsyTag = 0b10;
 let arrayTag = 0b01;
 
 class CodeGeneratorDynamicTyping implements Visitor<void> {
-  constructor(public locals: Map<string, number> = new Map(),
-              public nextLocalOffset: number = 0) {}
+  constructor(
+    public locals: Map<string, number> = new Map(),
+    public nextLocalOffset: number = 0
+  ) {}
 
-  visitMain(node: Main) {
-  }
+  visitMain(node: Main) {}
 
   emitCompareFalsy() {
     emit(`  cmp r0, #0`);
-    emit(`  andne r0, r0, #${tagBitMask}`)
+    emit(`  andne r0, r0, #${tagBitMask}`);
     emit(`  cmpne r0, #${falsyTag}`);
-  } 
+  }
 
   visitAssert(node: Assert) {
     node.condition.visit(this);
@@ -358,7 +380,7 @@ class CodeGeneratorDynamicTyping implements Visitor<void> {
     // Are both small integers?
     emit(`  orr r2, r0, r1`);
     emit(`  and r2, r2, #${tagBitMask}`);
-    emit(`  cmp r2, #0`); 
+    emit(`  cmp r2, #0`);
 
     emit(`  addeq r0, r1, r0`);
     emit(`  movne r0, #${undefinedBitPattern}`);
@@ -373,7 +395,7 @@ class CodeGeneratorDynamicTyping implements Visitor<void> {
     // Are both small integers?
     emit(`  orr r2, r0, r1`);
     emit(`  and r2, r2, #${tagBitMask}`);
-    emit(`  cmp r2, #0`); 
+    emit(`  cmp r2, #0`);
 
     emit(`  subeq r0, r1, r0`);
     emit(`  movne r0, #${undefinedBitPattern}`);
@@ -388,7 +410,7 @@ class CodeGeneratorDynamicTyping implements Visitor<void> {
     // Are both small integers?
     emit(`  orr r2, r0, r1`);
     emit(`  and r2, r2, #${tagBitMask}`);
-    emit(`  cmp r2, #0`); 
+    emit(`  cmp r2, #0`);
 
     emit(`  muleq r0, r1, r0`);
     emit(`  lsr r0, r0, #2`);
@@ -396,7 +418,7 @@ class CodeGeneratorDynamicTyping implements Visitor<void> {
   }
 
   visitDivide(node: Divide) {
-    throw Error("Not implemented: division");
+    throw Error('Not implemented: division');
     // emit(`  udiv r0, r1, r0`);
   }
 
@@ -416,7 +438,7 @@ class CodeGeneratorDynamicTyping implements Visitor<void> {
       emit(`  pop {r0, r1, r2, r3}`);
       emit(`  bl ${node.callee}`);
     } else {
-      throw Error("More than 4 arguments are not supported");
+      throw Error('More than 4 arguments are not supported');
     }
   }
 
@@ -460,9 +482,7 @@ class CodeGeneratorDynamicTyping implements Visitor<void> {
   }
 
   visitBlock(node: Block) {
-    node.statements.forEach((statement) =>
-      statement.visit(this)
-    );
+    node.statements.forEach((statement) => statement.visit(this));
   }
 
   visitIf(node: If) {
@@ -479,8 +499,8 @@ class CodeGeneratorDynamicTyping implements Visitor<void> {
   }
 
   visitFunctionDefinition(node: FunctionDefinition) {
-    if (node.signature.parameters.size > 4) 
-      throw Error("More than 4 params is not supported");
+    if (node.signature.parameters.size > 4)
+      throw Error('More than 4 params is not supported');
 
     emit(``);
     emit(`.global ${node.name}`);
@@ -552,4 +572,4 @@ class CodeGeneratorDynamicTyping implements Visitor<void> {
   }
 }
 
-export { CodeGenerator, CodeGeneratorDynamicTyping }
+export { CodeGenerator, CodeGeneratorDynamicTyping };
